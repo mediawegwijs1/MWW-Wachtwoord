@@ -1,0 +1,61 @@
+/* Startpagina */
+.home-hero { padding-top: 36px; }
+.home-logo {
+  width: 110px; height: 110px; display: block; margin: 0 auto 14px;
+  border-radius: 26px;
+  box-shadow: 0 12px 30px rgba(108, 76, 255, .3);
+  animation: bounce 2.4s ease-in-out infinite;
+}
+
+main.home { max-width: 1120px; }
+
+.missions {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.missions li { display: flex; }
+
+.mission {
+  position: relative;
+  flex: 1;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  padding: 30px 26px 26px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--ink); text-decoration: none;
+  border: 4px solid transparent;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.mission:hover { transform: translateY(-6px) rotate(-.6deg); border-color: var(--c); box-shadow: 0 18px 40px rgba(76, 52, 180, .18); }
+.mission:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; }
+.mission.m1 { --c: #ff9f1c; }
+.mission.m2 { --c: #4cc9f0; }
+.mission.m3 { --c: #1fbf75; }
+
+.mission-num {
+  position: absolute; top: -18px; left: 22px;
+  width: 48px; height: 48px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--c); color: #fff;
+  font-weight: 900; font-size: 24px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
+}
+.mission-art {
+  font-size: 54px; line-height: 1.1;
+  width: 100%; text-align: center;
+  padding: 18px 0; margin-bottom: 4px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--c) 14%, #fff);
+}
+.mission-title { font-size: 24px; font-weight: 900; line-height: 1.2; }
+.mission-text { color: var(--muted); flex: 1; }
+.mission-go {
+  margin-top: 8px;
+  font-weight: 900; font-size: 18px; color: #fff;
+  background: var(--c);
+  padding: 8px 18px; border-radius: 14px;
+  transition: transform .2s;
+}
+.mission:hover .mission-go { transform: translateX(6px); }
