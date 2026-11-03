@@ -173,14 +173,103 @@ main.brute { max-width: 980px; }
 .grow li.huge { color: #e0245e; font-size: 20px; }
 .big-word { font-size: 24px; font-weight: 900; text-align: center; margin: 6px 0 0 !important; }
 
-.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-.compare-card { text-align: center; }
-.compare-emoji { font-size: 52px; line-height: 1; display: block; margin-bottom: 6px; }
-.compare-card p { color: var(--muted); }
-.compare-card .compare-time { font-size: 28px; font-weight: 900; color: var(--ink); margin: 8px 0; }
-.compare-card.hand .compare-time { color: #e0245e; }
-.compare-card.pc .compare-time { color: var(--primary); }
-.compare-card .small { font-size: 15px; margin: 0; }
+/* Simulatie */
+.demo, .sim { text-align: center; }
+.demo-badge {
+  display: inline-block; margin-bottom: 8px;
+  background: #ffd23f; color: var(--ink);
+  padding: 4px 14px; border-radius: 999px;
+  font-weight: 900; font-size: 15px;
+}
+.demo-badge.real { background: #071a10; color: #4dff9a; }
+
+.login {
+  position: relative;
+  max-width: 640px; margin: 4px auto 0;
+  background: #f8f7ff; border: 3px solid #e3ddff; border-radius: 20px;
+  padding: 16px 18px 18px; text-align: left;
+  transition: border-color .15s, background .15s;
+}
+.login.fail { border-color: #ff4d6d; background: #fff1f4; }
+.login.fail .pw-box { border-color: #ff4d6d; }
+.login.fail-shake { animation: shake .25s; }
+.login-head { font-weight: 900; font-size: 20px; margin-bottom: 10px; }
+.login-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.login-label { font-weight: 800; font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+.login-row .login-label { margin: 0; }
+.login-user { background: #fff; border: 2px solid #e3ddff; border-radius: 10px; padding: 2px 12px; font-weight: 800; }
+
+.pw-boxes { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; }
+.pw-box {
+  height: 50px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: #fff; border: 3px solid #d9d2ff;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-weight: 900; font-size: 28px; color: var(--ink);
+  transition: border-color .15s;
+}
+.pw-box.roll { background: #ffd23f; border-color: #e0b400; animation: pop .3s; }
+.pw-box.blur { color: #8f86c9; background: #f1eeff; }
+
+.login-bottom { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+.login-btn {
+  display: inline-block; padding: 10px 26px; border-radius: 14px;
+  background: var(--primary); color: #fff; font-weight: 900;
+  box-shadow: 0 4px 0 #4a2fd1;
+  transition: transform .08s, box-shadow .08s;
+}
+.login-btn.press { transform: translateY(3px); box-shadow: 0 1px 0 #4a2fd1; }
+.login-msg { font-weight: 900; color: #e0244f; min-height: 1.5em; }
+
+.cursor {
+  position: absolute; left: 0; top: 0; z-index: 2;
+  width: 26px; height: 34px;
+  background: var(--ink);
+  clip-path: polygon(0 0, 0 78%, 26% 60%, 44% 100%, 60% 93%, 42% 55%, 78% 55%);
+  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 2px 2px rgba(0, 0, 0, .3));
+  transition: transform .5s ease-in-out, opacity .3s;
+  pointer-events: none;
+}
+.cursor.click { scale: .85; }
+.cursor.gone { opacity: 0; }
+.robot {
+  position: absolute; right: 14px; top: 10px;
+  font-size: 34px; line-height: 1;
+  opacity: 0; transform: scale(.5); transition: opacity .3s, transform .3s;
+}
+.robot.on { opacity: 1; transform: scale(1); }
+
+.demo-stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 18px 0 8px; }
+.demo-pill { background: #f4f1ff; border-radius: 16px; padding: 8px 18px; min-width: 170px; }
+.demo-pill span { display: block; font-size: 14px; font-weight: 800; color: var(--muted); }
+.demo-pill b { font-size: 24px; font-variant-numeric: tabular-nums; }
+.demo-caption { font-weight: 900; font-size: 20px; margin: 6px 0 14px !important; min-height: 1.5em; }
+.demo-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.demo-actions .btn { font-size: 17px; padding: 10px 18px; }
+
+.more-word { text-align: center; margin: 10px 0 0 !important; }
+
+/* Hoe lang duurt het */
+.hl-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px; text-align: center;
+}
+.hl-head { font-weight: 900; font-size: 18px; align-self: end; }
+.hl-row-label {
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  background: #f4f1ff; border-radius: 16px; padding: 12px;
+}
+.hl-row-label code { font-size: 15px; background: #fff; border-radius: 6px; padding: 1px 6px; align-self: center; }
+.hl-row-label span { font-size: 14px; color: var(--muted); font-weight: 700; }
+.hl-cell { border-radius: 16px; padding: 12px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.hl-cell b { font-size: 24px; line-height: 1.2; }
+.hl-cell span { font-size: 14px; color: var(--muted); font-weight: 700; }
+.hl-cell.hand { background: #fff0f4; }
+.hl-cell.hand b { color: #e0245e; }
+.hl-cell.ok { background: #eafaf2; }
+.hl-cell.ok b { color: #138a53; }
+.hl-cell.no { background: #fff0f4; }
+.hl-cell.no b { color: #e0245e; }
 
 .sim { text-align: center; }
 .sim code { background: #f4f1ff; padding: 2px 6px; border-radius: 6px; }
@@ -236,7 +325,18 @@ footer { padding-top: 0; }
   .reel { height: 48px; font-size: 28px; }
   .groups span { font-size: 14px; padding: 2px 9px; }
   .cpu-log { font-size: 13px; }
-  .compare { grid-template-columns: 1fr; }
+  .pw-boxes { gap: 3px; }
+  .pw-box { height: 40px; font-size: 19px; border-width: 2px; border-radius: 7px; }
+  .login { padding: 12px 10px 14px; }
+  .robot { font-size: 28px; }
+  .demo-pill { min-width: 140px; padding: 6px 12px; }
+  .demo-pill b { font-size: 20px; }
+  .demo-caption { font-size: 17px; }
+  .hl-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .hl-empty { display: none; }
+  .hl-row-label { grid-column: 1 / -1; }
+  .hl-head { font-size: 15px; }
+  .hl-cell b { font-size: 19px; }
   .grow li { grid-template-columns: 74px minmax(0, 1fr) auto; gap: 8px; font-size: 15px; }
   .grow li.huge { font-size: 15px; }
   .grow li.huge b { font-size: 13px; }
