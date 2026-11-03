@@ -26,8 +26,9 @@
   </header>
 
   <main>
+    <div class="play" id="play">
     <!-- Stap 1 -->
-    <section class="card step" aria-labelledby="stap1-titel">
+    <section class="card step typer" aria-labelledby="stap1-titel">
       <div class="step-number" aria-hidden="true">1</div>
       <h2 id="stap1-titel">Typ een wachtwoord</h2>
       <div class="input-row">
@@ -42,7 +43,14 @@
           <span aria-hidden="true">🧽</span>
         </button>
       </div>
-      <p class="char-count"><span id="length">0</span> tekens</p>
+      <p class="char-count"><span><span id="length">0</span> tekens</span><span class="mini-privacy">🛡️ Wordt nergens opgeslagen</span></p>
+      <ul class="mini-checks" aria-hidden="true">
+        <li data-check="lower">abc</li>
+        <li data-check="upper">ABC</li>
+        <li data-check="digit">123</li>
+        <li data-check="symbol">!?#</li>
+        <li data-check="long">12+ <span class="mini-len" id="mini-len">0/12</span></li>
+      </ul>
       <div class="privacy" role="note">
         <span class="privacy-icon" aria-hidden="true">🛡️</span>
         <p><strong>Geen zorgen!</strong> Wat je hier typt blijft op jouw eigen computer. We slaan niets op en sturen niets door. Gebruik toch liever <strong>niet</strong> je echte wachtwoord. Verzin er een om mee te oefenen!</p>
@@ -73,8 +81,10 @@
         </div>
         <p class="strength-label" id="strength-label">&nbsp;</p>
         <p class="warning" id="warning" hidden></p>
+        <p class="next-tip" id="next-tip" hidden></p>
       </div>
     </section>
+    </div>
 
     <!-- Stap 2 -->
     <section class="card step" aria-labelledby="stap2-titel">
