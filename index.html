@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Alles draait lokaal: geen verbindingen naar buiten toegestaan -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; form-action 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Leer hoe je een supersterk wachtwoord maakt! Zie hoe lang een hacker erover doet om jouw wachtwoord te raden.">
+  <title>Wachtwoord Held 🔐 MediaWegwijs</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-shapes" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <header class="hero">
+    <p class="badge">MediaWegwijs</p>
+    <h1>Word een <span class="highlight">Wachtwoord Held!</span> 🦸</h1>
+    <p class="lead">Hoe lang doet een hacker erover om jouw wachtwoord te raden? Typ een wachtwoord en ontdek het!</p>
+  </header>
+
+  <main>
+    <!-- Stap 1 -->
+    <section class="card step" aria-labelledby="stap1-titel">
+      <div class="step-number" aria-hidden="true">1</div>
+      <h2 id="stap1-titel">Typ een wachtwoord</h2>
+      <div class="input-row">
+        <label for="password" class="visually-hidden">Wachtwoord</label>
+        <input id="password" type="password" placeholder="Typ hier je wachtwoord…"
+               autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+               data-lpignore="true" data-1p-ignore data-form-type="other" maxlength="128">
+        <button type="button" id="toggle" class="icon-btn" aria-pressed="false" aria-label="Laat wachtwoord zien">
+          <span aria-hidden="true">🙈</span>
+        </button>
+        <button type="button" id="clear" class="icon-btn" aria-label="Wis wachtwoord">
+          <span aria-hidden="true">🧽</span>
+        </button>
+      </div>
+      <p class="char-count"><span id="length">0</span> tekens</p>
+      <div class="privacy" role="note">
+        <span class="privacy-icon" aria-hidden="true">🛡️</span>
+        <p><strong>Geen zorgen!</strong> Wat je hier typt blijft op jouw eigen computer. We slaan niets op en sturen niets door. Gebruik toch liever <strong>niet</strong> je echte wachtwoord. Verzin er een om mee te oefenen!</p>
+      </div>
+    </section>
+
+    <!-- Resultaat -->
+    <section class="card result" id="result" aria-labelledby="result-titel" data-level="none">
+      <div class="mascot-wrap">
+        <svg class="mascot" viewBox="0 0 120 140" aria-hidden="true">
+          <path class="shackle" d="M30 62 V42 a30 30 0 0 1 60 0 V62" fill="none" stroke-width="12" stroke-linecap="round"/>
+          <rect class="body" x="10" y="58" width="100" height="78" rx="20"/>
+          <circle cx="42" cy="88" r="7" fill="#1f1b3a"/>
+          <circle cx="78" cy="88" r="7" fill="#1f1b3a"/>
+          <circle cx="44" cy="86" r="2.2" fill="#fff"/>
+          <circle cx="80" cy="86" r="2.2" fill="#fff"/>
+          <circle class="cheek" cx="30" cy="104" r="6"/>
+          <circle class="cheek" cx="90" cy="104" r="6"/>
+          <path id="mouth" d="M45 112 Q60 112 75 112" fill="none" stroke="#1f1b3a" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="result-text">
+        <h2 id="result-titel">Een hacker heeft nodig:</h2>
+        <p class="crack-time" id="crack-time" aria-live="polite">…</p>
+        <p class="crack-compare" id="crack-compare">Begin met typen om het te zien!</p>
+        <div class="meter" role="meter" aria-label="Sterkte van het wachtwoord" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" id="meter">
+          <div class="meter-fill" id="meter-fill"></div>
+        </div>
+        <p class="strength-label" id="strength-label">&nbsp;</p>
+        <p class="warning" id="warning" hidden></p>
+      </div>
+    </section>
+
+    <!-- Stap 2 -->
+    <section class="card step" aria-labelledby="stap2-titel">
+      <div class="step-number" aria-hidden="true">2</div>
+      <h2 id="stap2-titel">Checklist: maak het sterker!</h2>
+      <p class="sub">Kijk wat er gebeurt als je iets toevoegt. Elke ✅ maakt het moeilijker voor de hacker!</p>
+      <ul class="checklist" id="checklist">
+        <li data-check="lower">
+          <span class="check" aria-hidden="true"></span>
+          <div>
+            <strong>Kleine letters</strong> <span class="example">a b c</span>
+            <p class="gain"></p>
+          </div>
+        </li>
+        <li data-check="upper">
+          <span class="check" aria-hidden="true"></span>
+          <div>
+            <strong>Hoofdletters</strong> <span class="example">A B C</span>
+            <p class="gain"></p>
+          </div>
+        </li>
+        <li data-check="digit">
+          <span class="check" aria-hidden="true"></span>
+          <div>
+            <strong>Cijfers</strong> <span class="example">1 2 3</span>
+            <p class="gain"></p>
+          </div>
+        </li>
+        <li data-check="symbol">
+          <span class="check" aria-hidden="true"></span>
+          <div>
+            <strong>Speciale tekens</strong> <span class="example">! ? # @ &amp;</span>
+            <p class="gain"></p>
+          </div>
+        </li>
+        <li data-check="long">
+          <span class="check" aria-hidden="true"></span>
+          <div>
+            <strong>Lang wachtwoord</strong> <span class="example">12 tekens of meer</span>
+            <div class="length-bar" aria-hidden="true"><div class="length-fill" id="length-fill"></div></div>
+            <p class="gain"></p>
+          </div>
+        </li>
+      </ul>
+      <p class="all-done" id="all-done" hidden>🎉 Wauw! Alles afgevinkt. Jij bent een echte Wachtwoord Held!</p>
+    </section>
+
+    <!-- Stap 3 -->
+    <section class="card step" aria-labelledby="stap3-titel">
+      <div class="step-number" aria-hidden="true">3</div>
+      <h2 id="stap3-titel">Zie het verschil!</h2>
+      <p class="sub">Kijk hoe een wachtwoord steeds sterker wordt:</p>
+      <ol class="ladder" id="ladder"></ol>
+    </section>
+
+    <!-- Uitleg -->
+    <section class="card info" aria-labelledby="hoe-titel">
+      <h2 id="hoe-titel">🤖 Hoe raadt een hacker je wachtwoord?</h2>
+      <p>Een hacker laat een supersnelle computer <strong>alle mogelijke wachtwoorden</strong> proberen: <code>a</code>, <code>b</code>, <code>c</code> … <code>aa</code>, <code>ab</code> … Dat heet <strong>brute force</strong>.</p>
+      <p>Zo'n computer kan wel <strong>10 miljard</strong> wachtwoorden per seconde proberen! Hoe meer soorten tekens en hoe langer je wachtwoord, hoe meer mogelijkheden er zijn. Dan duurt het raden héél lang.</p>
+      <p>Bekende wachtwoorden zoals <code>123456</code> of <code>wachtwoord</code> probeert een hacker als eerste. Die zijn dus meteen gekraakt!</p>
+    </section>
+
+    <section class="card tips" aria-labelledby="tips-titel">
+      <h2 id="tips-titel">💡 Tips van de Wachtwoord Held</h2>
+      <ul class="tip-list">
+        <li><span class="tip-icon" aria-hidden="true">🧩</span><span>Maak een <strong>zin</strong> van een paar woorden, zoals <code>MijnHondEetGraag3Koekjes!</code></span></li>
+        <li><span class="tip-icon" aria-hidden="true">🙊</span><span>Vertel je wachtwoord aan <strong>niemand</strong>, behalve je ouders of verzorgers.</span></li>
+        <li><span class="tip-icon" aria-hidden="true">🔁</span><span>Gebruik voor elke website een <strong>ander</strong> wachtwoord.</span></li>
+        <li><span class="tip-icon" aria-hidden="true">🚫</span><span>Gebruik niet je <strong>naam</strong>, verjaardag of de naam van je huisdier.</span></li>
+        <li><span class="tip-icon" aria-hidden="true">📏</span><span><strong>Langer is beter!</strong> Een lang wachtwoord is het moeilijkst te kraken.</span></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Gemaakt door MediaWegwijs. Alles werkt op jouw eigen apparaat, er wordt niets opgeslagen.</p>
+    <p class="small">De tijden zijn schattingen bij 10 miljard pogingen per seconde.</p>
+  </footer>
+
+  <div id="confetti" aria-hidden="true"></div>
+  <script src="script.js"></script>
+</body>
+</html>
