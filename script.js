@@ -152,6 +152,33 @@
   const lengthFill = $("length-fill");
   const allDone = $("all-done");
   const items = Array.from(document.querySelectorAll("#checklist li"));
+  const miniItems = Array.from(document.querySelectorAll(".mini-checks li"));
+  const miniLen = $("mini-len");
+  const play = $("play");
+  const nextTip = $("next-tip");
+
+  const TIP_TEXT = {
+    lower: "Voeg een kleine letter toe",
+    upper: "Voeg een hoofdletter toe",
+    digit: "Voeg een cijfer toe",
+    symbol: "Voeg een speciaal teken toe",
+    long: `Maak hem ${LONG_LENGTH} tekens lang`,
+  };
+
+  // Zoek de stap die de kraaktijd het meest verlengt
+  function bestTip(a, pool) {
+    let best = null;
+    for (const key of Object.keys(SETS)) {
+      if (a[key]) continue;
+      const log = crackLog10Seconds(a.length + 1, pool + SETS[key]);
+      if (!best || log > best.log) best = { key, log };
+    }
+    if (a.length < LONG_LENGTH) {
+      const log = crackLog10Seconds(LONG_LENGTH, pool);
+      if (!best || log > best.log) best = { key: "long", log };
+    }
+    return best;
+  }
 
   let wasAllDone = false;
   let lastTimeText = "";
@@ -187,6 +214,7 @@
       meter.setAttribute("aria-valuenow", "0");
       mouth.setAttribute("d", "M45 112 Q60 112 75 112");
       warning.hidden = true;
+      nextTip.hidden = true;
       lastTimeText = "";
     } else {
       const level = levelFor(logSec, common);
@@ -207,6 +235,10 @@
       meterFill.style.width = `${Math.max(8, ((level + 1) / LEVELS.length) * 100)}%`;
       meter.setAttribute("aria-valuenow", String(level));
       mouth.setAttribute("d", lv.mouth);
+
+      const tip = common ? null : bestTip(a, pool);
+      nextTip.hidden = !tip;
+      if (tip) setGain(nextTip, [`💡 ${TIP_TEXT[tip.key]} en het wordt `, { b: formatDuration(tip.log) }]);
 
       if (common) {
         warning.hidden = false;
@@ -253,6 +285,17 @@
         setGain(gain, ["Voeg er één toe en het wordt: ", { b: formatDuration(withIt) }]);
       }
     }
+    for (const li of miniItems) {
+      const key = li.dataset.check;
+      const done = Boolean(key === "long" ? a.length >= LONG_LENGTH : a[key]);
+      if (done && !li.classList.contains("done")) {
+        li.classList.add("just-done");
+        setTimeout(() => li.classList.remove("just-done"), 600);
+      }
+      li.classList.toggle("done", done);
+    }
+    miniLen.textContent = `${Math.min(a.length, LONG_LENGTH)}/${LONG_LENGTH}`;
+
     lengthFill.style.width = `${Math.min(100, (a.length / LONG_LENGTH) * 100)}%`;
 
     const isAllDone = doneCount === items.length && !common;
@@ -309,8 +352,64 @@
     }
   }
 
+  // ---------- Layout-animatie ----------
+  // Meet de posities voor en na de wissel en laat de blokken soepel naar hun nieuwe plek schuiven.
+  const mainEl = document.querySelector("main");
+  const playCards = Array.from(play.children);
+  const otherSections = Array.from(mainEl.children).filter((el) => el !== play);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const running = [];
+
+  function animateLayout(change) {
+    if (reduceMotion.matches) { change(); return; }
+
+    // Meten vóór het stoppen van een lopende animatie, zodat een snelle wissel vloeiend omkeert
+    const all = [...playCards, ...otherSections];
+    const before = new Map(all.map((el) => [el, el.getBoundingClientRect()]));
+    while (running.length) running.pop().cancel();
+    change();
+
+    const timing = { duration: 550, easing: "cubic-bezier(.2, .9, .25, 1.05)" };
+    for (const el of all) {
+      const a = before.get(el);
+      const b = el.getBoundingClientRect();
+      const dx = a.left - b.left;
+      const dy = a.top - b.top;
+      if (!dx && !dy && a.width === b.width && a.height === b.height) continue;
+      const frames = playCards.includes(el)
+        ? [
+            { transform: `translate(${dx}px, ${dy}px)`, width: `${a.width}px`, height: `${a.height}px` },
+            { transform: "translate(0, 0)", width: `${b.width}px`, height: `${b.height}px` },
+          ]
+        : [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }];
+      running.push(el.animate(frames, timing));
+    }
+  }
+
+  // ---------- Typmodus ----------
+  // Tijdens het typen verdwijnen titel en privacyblok, zodat typveld en slotje
+  // ook met een open toetsenbord samen in beeld blijven.
+  function setTyping() {
+    const typing = document.activeElement === input || input.value.length > 0;
+    if (typing === document.body.classList.contains("typing")) return;
+    animateLayout(() => document.body.classList.toggle("typing", typing));
+    if (typing) {
+      requestAnimationFrame(() => {
+        const top = play.getBoundingClientRect().top + window.scrollY - 30;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      });
+    }
+  }
+
   // ---------- Events ----------
-  input.addEventListener("input", update);
+  input.addEventListener("input", () => { update(); setTyping(); });
+  input.addEventListener("focus", setTyping);
+  input.addEventListener("blur", setTyping);
+
+  // Knoppen mogen de focus niet van het typveld afpakken (toetsenbord blijft open)
+  for (const btn of [toggle, clearBtn]) {
+    btn.addEventListener("pointerdown", (e) => e.preventDefault());
+  }
 
   toggle.addEventListener("click", () => {
     const show = input.type === "password";
@@ -328,7 +427,7 @@
   });
 
   // Zorg dat er nooit een oud wachtwoord blijft staan (bijv. na terug-knop)
-  window.addEventListener("pageshow", () => { input.value = ""; update(); });
+  window.addEventListener("pageshow", () => { input.value = ""; update(); setTyping(); });
   window.addEventListener("pagehide", () => { input.value = ""; });
 
   buildLadder();
