@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; form-action 'none'; img-src 'self'; manifest-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Kraak de pincode van het fietsslot voordat de tijd op is!">
+  <title>Opdracht 1: Kraak de pincode 🚲 Wachtwoord Held</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#6c4cff">
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="pincode.css">
+</head>
+<body data-screen="start">
+  <div class="bg-shapes" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <nav class="topnav" aria-label="Navigatie">
+    <a href="../">🏠 <span class="hide-small">Alle opdrachten</span></a>
+    <span class="topnav-title">Opdracht 1 van 3</span>
+    <button type="button" id="sound-toggle" aria-pressed="false">
+      <span data-icon aria-hidden="true">🔇</span><span data-label class="hide-small">Geluid uit</span>
+    </button>
+  </nav>
+
+  <!-- Startscherm -->
+  <section class="start-screen" id="start-screen" aria-labelledby="start-titel">
+    <header class="hero">
+      <h1 id="start-titel">Kraak de <span class="highlight">pincode!</span> 🚲</h1>
+      <p class="lead">Op dit fietsslot zit een geheime code van 4 cijfers. Elk cijfer komt maar één keer voor. Kun jij hem kraken voordat de tijd op is?</p>
+    </header>
+
+    <div class="card how">
+      <h2>Zo werkt het</h2>
+      <ol class="how-steps">
+        <li><span class="how-icon" aria-hidden="true">🎡</span><span>Draai aan de wieltjes of typ de cijfers in.</span></li>
+        <li><span class="how-icon" aria-hidden="true">🔓</span><span>Druk op <strong>Open maken!</strong></span></li>
+        <li><span class="how-icon" aria-hidden="true">🎨</span><span>De kleuren vertellen je hoe goed je zat:</span></li>
+      </ol>
+      <ul class="legend">
+        <li><span class="tile green">5</span><span><strong>Groen:</strong> goed cijfer op de goede plek</span></li>
+        <li><span class="tile orange">5</span><span><strong>Oranje:</strong> goed cijfer, maar op een andere plek</span></li>
+        <li><span class="tile grey">5</span><span><strong>Grijs:</strong> dit cijfer zit niet in de code</span></li>
+      </ul>
+    </div>
+
+    <div class="card levels">
+      <h2>Kies je niveau</h2>
+      <div class="level-buttons">
+        <button type="button" class="level" data-seconds="180"><span class="level-emoji" aria-hidden="true">🐢</span><strong>Makkelijk</strong><span>3 minuten</span></button>
+        <button type="button" class="level" data-seconds="120"><span class="level-emoji" aria-hidden="true">🐇</span><strong>Normaal</strong><span>2 minuten</span></button>
+        <button type="button" class="level" data-seconds="90"><span class="level-emoji" aria-hidden="true">🚀</span><strong>Moeilijk</strong><span>1,5 minuut</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spel -->
+  <main class="game" id="game" hidden>
+    <section class="lock-area" aria-label="Fietsslot">
+      <div class="hud">
+        <div class="hud-pill timer" id="timer" role="timer" aria-live="off">⏱️ <span id="time-left">2:00</span></div>
+        <div class="hud-pill">🔁 <span id="attempts">0</span> <span class="hide-small" id="attempts-word">pogingen</span></div>
+      </div>
+
+      <div class="bike-lock" id="lock" data-mood="neutral">
+        <svg class="cable" viewBox="0 0 460 130" aria-hidden="true" preserveAspectRatio="none">
+          <path class="cable-base" d="M60 130 V95 C60 8 400 8 400 95 V130"/>
+          <path class="cable-stripes" d="M60 130 V95 C60 8 400 8 400 95 V130"/>
+        </svg>
+        <div class="lock-body">
+          <div class="lock-face" aria-hidden="true">
+            <svg viewBox="0 0 100 80">
+              <circle class="cheek" cx="18" cy="52" r="7"/>
+              <circle class="cheek" cx="82" cy="52" r="7"/>
+              <g class="eye eye-l"><circle cx="32" cy="32" r="12" fill="#fff"/><circle class="pupil" cx="32" cy="33" r="6" fill="#1f1b3a"/></g>
+              <g class="eye eye-r"><circle cx="68" cy="32" r="12" fill="#fff"/><circle class="pupil" cx="68" cy="33" r="6" fill="#1f1b3a"/></g>
+              <path class="mouth" id="mouth" d="M38 60 Q50 60 62 60"/>
+            </svg>
+          </div>
+          <div class="wheels" id="wheels" role="group" aria-label="Cijferwieltjes"></div>
+        </div>
+      </div>
+
+      <button type="button" class="btn green open-btn" id="open-btn">🔓 Open maken!</button>
+
+      <div class="numpad" id="numpad" aria-label="Cijfers typen">
+        <button type="button" data-digit="1">1</button>
+        <button type="button" data-digit="2">2</button>
+        <button type="button" data-digit="3">3</button>
+        <button type="button" data-digit="4">4</button>
+        <button type="button" data-digit="5">5</button>
+        <button type="button" data-digit="6">6</button>
+        <button type="button" data-digit="7">7</button>
+        <button type="button" data-digit="8">8</button>
+        <button type="button" data-digit="9">9</button>
+        <button type="button" data-digit="0">0</button>
+        <button type="button" data-action="back" aria-label="Vorig wieltje">⬅️</button>
+      </div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    </section>
+
+    <aside class="card history" aria-labelledby="history-titel">
+      <h2 id="history-titel">📜 Jouw pogingen</h2>
+      <ul class="legend small">
+        <li><span class="tile green"></span>Goede plek</li>
+        <li><span class="tile orange"></span>Andere plek</li>
+        <li><span class="tile grey"></span>Zit er niet in</li>
+      </ul>
+      <ol class="history-list" id="history-list" reversed></ol>
+      <p class="history-empty" id="history-empty">Nog geen pogingen. Draai aan de wieltjes en druk op <strong>Open maken!</strong></p>
+    </aside>
+  </main>
+
+  <!-- Resultaat -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-titel">
+      <span class="big-emoji" id="dialog-emoji" aria-hidden="true">🎉</span>
+      <h2 id="dialog-titel">Gekraakt!</h2>
+      <p id="dialog-text"></p>
+      <div class="stats" id="dialog-stats"></div>
+      <p class="lesson" id="dialog-lesson"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="again-btn">🔁 Nog een keer</button>
+        <button type="button" class="btn secondary" id="level-btn">🎚️ Ander niveau</button>
+        <a class="btn green" href="../opdracht-2/" id="next-btn">Naar opdracht 2 👉</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/common.js"></script>
+  <script src="pincode.js"></script>
+</body>
+</html>

@@ -334,22 +334,8 @@
     }
   }
 
-  // ---------- Confetti ----------
   function confetti() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const box = $("confetti");
-    const colors = ["#6c4cff", "#ff6fb1", "#ffd23f", "#1fbf75", "#4cc9f0", "#ff9f1c"];
-    for (let i = 0; i < 120; i++) {
-      const p = document.createElement("span");
-      p.className = "confetti-piece";
-      p.style.left = `${Math.random() * 100}vw`;
-      p.style.background = colors[i % colors.length];
-      p.style.animationDuration = `${2 + Math.random() * 2}s`;
-      p.style.animationDelay = `${Math.random() * 0.6}s`;
-      p.style.transform = `rotate(${Math.random() * 360}deg)`;
-      box.append(p);
-      setTimeout(() => p.remove(), 5000);
-    }
+    window.MWW.confetti();
   }
 
   // ---------- Layout-animatie ----------

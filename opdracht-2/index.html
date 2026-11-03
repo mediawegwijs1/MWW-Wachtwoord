@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; form-action 'none'; img-src 'self'; manifest-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Ontdek hoe brute force werkt: raad een wachtwoord letter voor letter en zie hoe een computer het doet.">
+  <title>Opdracht 2: Brute force 🔨 Wachtwoord Held</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#6c4cff">
+  <link rel="stylesheet" href="../assets/base.css">
+  <link rel="stylesheet" href="brute.css">
+</head>
+<body>
+  <div class="bg-shapes" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <nav class="topnav" aria-label="Navigatie">
+    <a href="../">🏠 <span class="hide-small">Alle opdrachten</span></a>
+    <span class="topnav-title">Opdracht 2 van 3</span>
+    <button type="button" id="sound-toggle" aria-pressed="false">
+      <span data-icon aria-hidden="true">🔇</span><span data-label class="hide-small">Geluid uit</span>
+    </button>
+  </nav>
+
+  <header class="hero">
+    <h1>Word een <span class="highlight">brute force</span> hacker! 🔨</h1>
+    <p class="lead">Brute force betekent: gewoon alles proberen tot je het goede antwoord vindt. Raad het geheime wachtwoord letter voor letter.</p>
+  </header>
+
+  <ol class="steps-bar" id="steps" aria-label="Voortgang">
+    <li data-step="0"><span class="dot">1</span><span class="step-label">1 letter</span></li>
+    <li data-step="1"><span class="dot">2</span><span class="step-label">2 letters</span></li>
+    <li data-step="2"><span class="dot">3</span><span class="step-label">3 letters</span></li>
+    <li data-step="3"><span class="dot">🤖</span><span class="step-label">12 letters</span></li>
+    <li data-step="4"><span class="dot">💡</span><span class="step-label">Zo zit het echt</span></li>
+  </ol>
+
+  <main class="brute">
+    <!-- Zelf raden -->
+    <section class="card stage" id="stage-guess" aria-labelledby="round-title">
+      <div class="guess-left">
+        <h2 id="round-title">Ronde 1: 1 letter 🔤</h2>
+        <p class="sub" id="round-sub">Het wachtwoord bestaat uit kleine letters. Kies een letter. Is hij goed, dan wordt het vakje groen!</p>
+        <div class="slots" id="slots" aria-label="Het geheime wachtwoord"></div>
+        <div class="hud">
+          <div class="hud-pill">🔁 <span id="tries">0</span> <span id="tries-word">pogingen</span></div>
+          <div class="hud-pill">⏱️ <span id="clock">0:00</span></div>
+        </div>
+        <p class="guess-msg" id="guess-msg" aria-live="polite">Welke letter zou het zijn? 🤔</p>
+      </div>
+      <div class="keyboard" id="keyboard" aria-label="Letters"></div>
+    </section>
+
+    <!-- Ronde klaar -->
+    <section class="card stage done-card" id="stage-done" hidden aria-labelledby="done-title">
+      <span class="big-emoji" aria-hidden="true">🎉</span>
+      <h2 id="done-title">Gekraakt!</h2>
+      <p id="done-text"></p>
+      <div class="stats" id="done-stats"></div>
+      <p class="lesson" id="done-lesson"></p>
+      <button type="button" class="btn green" id="next-round">Volgende 👉</button>
+    </section>
+
+    <!-- De computer -->
+    <section class="card stage" id="stage-computer" hidden aria-labelledby="cpu-title">
+      <h2 id="cpu-title">Nu een wachtwoord van 12 letters! 😱</h2>
+      <p class="sub">Dat duurt met de hand veel te lang. Gelukkig heeft een hacker een computer die nooit moe wordt.</p>
+
+      <div class="monitor">
+        <div class="screen">
+          <div class="reels" id="reels" aria-hidden="true"></div>
+          <div class="screen-info">
+            <span>Pogingen: <b id="cpu-count">0</b></span>
+            <span id="cpu-status">Klaar om te starten</span>
+          </div>
+          <ol class="cpu-log" id="cpu-log" aria-hidden="true"></ol>
+        </div>
+        <div class="monitor-stand" aria-hidden="true"></div>
+      </div>
+
+      <div class="cpu-actions">
+        <button type="button" class="btn" id="cpu-start">🤖 Laat de computer het doen</button>
+      </div>
+      <div class="cpu-result" id="cpu-result" hidden>
+        <p id="cpu-result-text" aria-live="polite"></p>
+        <button type="button" class="btn green" id="to-truth">Maar wacht eens even... 🤔</button>
+      </div>
+    </section>
+
+    <!-- Zo zit het echt -->
+    <section class="stage truth" id="stage-truth" hidden aria-labelledby="truth-title">
+      <div class="card">
+        <h2 id="truth-title">Een echte hacker krijgt geen hints! 🕵️</h2>
+        <p>Tot nu toe hoorde je bij elke letter of hij goed was. Zo werkt het in het echt niet. Een website zegt alleen: <strong>wachtwoord fout</strong>. De hacker moet dus elk wachtwoord in zijn geheel proberen.</p>
+        <p>Kijk hoe snel het aantal mogelijkheden groeit bij elke letter die erbij komt:</p>
+        <ul class="grow">
+          <li><span class="grow-len">1 letter</span><span class="grow-bar w1" aria-hidden="true"></span><b>26</b></li>
+          <li><span class="grow-len">2 letters</span><span class="grow-bar w2" aria-hidden="true"></span><b>676</b></li>
+          <li><span class="grow-len">3 letters</span><span class="grow-bar w3" aria-hidden="true"></span><b>17.576</b></li>
+          <li><span class="grow-len">6 letters</span><span class="grow-bar w6" aria-hidden="true"></span><b>308.915.776</b></li>
+          <li class="huge"><span class="grow-len">12 letters</span><span class="grow-bar w12" aria-hidden="true"></span><b>95.428.956.661.682.176</b></li>
+        </ul>
+        <p class="big-word">Dat is <strong>95 biljard</strong> mogelijke wachtwoorden! 🤯</p>
+      </div>
+
+      <div class="compare">
+        <div class="card compare-card hand">
+          <span class="compare-emoji" aria-hidden="true">✋</span>
+          <h3>Met de hand</h3>
+          <p>Als jij elke seconde één wachtwoord probeert, zonder te slapen of te eten...</p>
+          <p class="compare-time">ruim 3 miljard jaar</p>
+          <p class="small">Zo lang geleden waren er nog niet eens dinosaurussen! 🦕</p>
+        </div>
+        <div class="card compare-card pc">
+          <span class="compare-emoji" aria-hidden="true">🤖</span>
+          <h3>Met een snelle computer</h3>
+          <p>Een computer probeert wel 10 miljard wachtwoorden per seconde...</p>
+          <p class="compare-time">ongeveer 110 dagen</p>
+          <p class="small">Dat kan dus wél! Maar het duurt best lang.</p>
+        </div>
+      </div>
+
+      <div class="card sim">
+        <h3>Probeer het zelf: laat de computer alles proberen</h3>
+        <p class="sub">De computer begint bij <code>aaaaaaaaaaaa</code> en probeert 10 miljard wachtwoorden per seconde.</p>
+        <div class="sim-screen">
+          <span class="sim-label">Geprobeerd</span>
+          <span class="sim-count" id="sim-count">0</span>
+          <div class="sim-track" aria-hidden="true"><div class="sim-bar" id="sim-bar"></div></div>
+          <span class="sim-pct"><span id="sim-pct">0,000000</span>% van alle wachtwoorden</span>
+        </div>
+        <button type="button" class="btn" id="sim-btn">▶️ Start de computer</button>
+        <p class="sim-note" id="sim-note" aria-live="polite"></p>
+      </div>
+
+      <div class="card final">
+        <h3>💡 Wat heb je geleerd?</h3>
+        <ul class="tip-list">
+          <li><span class="tip-icon" aria-hidden="true">🔨</span><span>Brute force is alles proberen. Een computer doet dat razendsnel.</span></li>
+          <li><span class="tip-icon" aria-hidden="true">📏</span><span>Elke letter extra maakt het aantal mogelijkheden <strong>26 keer</strong> zo groot.</span></li>
+          <li><span class="tip-icon" aria-hidden="true">🔠</span><span>Gebruik je ook hoofdletters, cijfers en tekens? Dan wordt het nog véél moeilijker!</span></li>
+        </ul>
+        <div class="final-actions">
+          <a class="btn green" href="../opdracht-3/">Naar opdracht 3 👉</a>
+          <button type="button" class="btn secondary" id="restart">🔁 Opnieuw beginnen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🔒 Er wordt niets opgeslagen of verstuurd. Alles gebeurt op dit apparaat.</p>
+  </footer>
+
+  <script src="../assets/common.js"></script>
+  <script src="brute.js"></script>
+</body>
+</html>
