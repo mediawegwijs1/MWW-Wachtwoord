@@ -36,7 +36,7 @@
     <li data-step="0"><span class="dot">1</span><span class="step-label">1 letter</span></li>
     <li data-step="1"><span class="dot">2</span><span class="step-label">2 letters</span></li>
     <li data-step="2"><span class="dot">3</span><span class="step-label">3 letters</span></li>
-    <li data-step="3"><span class="dot">🤖</span><span class="step-label">12 letters</span></li>
+    <li data-step="3"><span class="dot">🤖</span><span class="step-label">12 tekens</span></li>
     <li data-step="4"><span class="dot">💡</span><span class="step-label">Zo zit het echt</span></li>
   </ol>
 
@@ -68,11 +68,14 @@
 
     <!-- De computer -->
     <section class="card stage" id="stage-computer" hidden aria-labelledby="cpu-title">
-      <h2 id="cpu-title">Nu een wachtwoord van 12 letters! 😱</h2>
-      <p class="sub">Dat duurt met de hand veel te lang. Gelukkig heeft een hacker een computer die nooit moe wordt.</p>
+      <h2 id="cpu-title">Nu een wachtwoord van 12 tekens! 😱</h2>
+      <p class="sub">Dit wachtwoord heeft ook hoofdletters, cijfers en leestekens. Met de hand duurt dat veel te lang. Gelukkig heeft een hacker een computer die nooit moe wordt. Hij probeert op elke plek alle tekens, één voor één.</p>
 
       <div class="monitor">
         <div class="screen">
+          <div class="groups" id="cpu-groups" aria-hidden="true">
+            <span data-g="0">abc</span><span data-g="1">ABC</span><span data-g="2">123</span><span data-g="3">!?#</span>
+          </div>
           <div class="reels" id="reels" aria-hidden="true"></div>
           <div class="screen-info">
             <span>Pogingen: <b id="cpu-count">0</b></span>
@@ -97,7 +100,7 @@
       <div class="card">
         <h2 id="truth-title">Een echte hacker krijgt geen hints! 🕵️</h2>
         <p>Tot nu toe hoorde je bij elke letter of hij goed was. Zo werkt het in het echt niet. Een website zegt alleen: <strong>wachtwoord fout</strong>. De hacker moet dus elk wachtwoord in zijn geheel proberen.</p>
-        <p>Kijk hoe snel het aantal mogelijkheden groeit bij elke letter die erbij komt:</p>
+        <p>Kijk hoe snel het aantal mogelijkheden groeit bij elke letter die erbij komt. En dan tellen we alleen nog maar kleine letters!</p>
         <ul class="grow">
           <li><span class="grow-len">1 letter</span><span class="grow-bar w1" aria-hidden="true"></span><b>26</b></li>
           <li><span class="grow-len">2 letters</span><span class="grow-bar w2" aria-hidden="true"></span><b>676</b></li>
