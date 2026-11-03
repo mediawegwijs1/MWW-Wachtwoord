@@ -109,28 +109,60 @@
           <li class="huge"><span class="grow-len">12 letters</span><span class="grow-bar w12" aria-hidden="true"></span><b>95.428.956.661.682.176</b></li>
         </ul>
         <p class="big-word">Dat is <strong>95 biljard</strong> mogelijke wachtwoorden! 🤯</p>
+        <p class="more-word">En met hoofdletters, cijfers en leestekens erbij? Dan zijn er op elke plek 72 tekens in plaats van 26. Dat geeft <strong>19 triljard</strong> mogelijkheden!</p>
       </div>
 
-      <div class="compare">
-        <div class="card compare-card hand">
-          <span class="compare-emoji" aria-hidden="true">✋</span>
-          <h3>Met de hand</h3>
-          <p>Als jij elke seconde één wachtwoord probeert, zonder te slapen of te eten...</p>
-          <p class="compare-time">ruim 3 miljard jaar</p>
-          <p class="small">Zo lang geleden waren er nog niet eens dinosaurussen! 🦕</p>
+      <div class="card demo" id="demo">
+        <span class="demo-badge">🎬 Simulatie</span>
+        <h3>Zo werkt brute force</h3>
+        <p class="sub">De computer probeert elk wachtwoord, één voor één. Op het laatste vakje gaat hij alle tekens af: kleine letters, hoofdletters, cijfers en leestekens. Daarna schuift het vakje ervoor één teken op, net als een kilometerteller. In het begin gaat het expres langzaam zodat je kunt zien wat er gebeurt.</p>
+
+        <div class="login" id="login">
+          <div class="login-head"><span aria-hidden="true">🔐</span> Inloggen</div>
+          <div class="login-row"><span class="login-label">Naam</span><span class="login-user">juf.anna</span></div>
+          <div class="login-label">Wachtwoord</div>
+          <div class="pw-boxes" id="pw-boxes" aria-hidden="true"></div>
+          <div class="login-bottom">
+            <span class="login-btn" id="login-btn">Inloggen</span>
+            <span class="login-msg" id="login-msg"></span>
+          </div>
+          <span class="cursor" id="cursor" aria-hidden="true"></span>
+          <span class="robot" id="robot" aria-hidden="true">🤖</span>
         </div>
-        <div class="card compare-card pc">
-          <span class="compare-emoji" aria-hidden="true">🤖</span>
-          <h3>Met een snelle computer</h3>
-          <p>Een computer probeert wel 10 miljard wachtwoorden per seconde...</p>
-          <p class="compare-time">ongeveer 110 dagen</p>
-          <p class="small">Dat kan dus wél! Maar het duurt best lang.</p>
+
+        <div class="demo-stats">
+          <div class="demo-pill"><span>Pogingen</span><b id="demo-count">0</b></div>
+          <div class="demo-pill"><span>Snelheid</span><b id="demo-speed">1 per seconde</b></div>
+        </div>
+        <p class="demo-caption" id="demo-caption" aria-live="polite">✋ Zo zou jij het doen: één voor één.</p>
+        <div class="demo-actions">
+          <button type="button" class="btn secondary" id="demo-pause">⏸️ Pauze</button>
+          <button type="button" class="btn secondary" id="demo-restart">🔁 Opnieuw</button>
+        </div>
+      </div>
+
+      <div class="card howlong">
+        <h3>⏳ Hoe lang duurt het om álles te proberen?</h3>
+        <p class="sub">Met de hand probeer je 1 wachtwoord per seconde, zonder te slapen of te eten. Een snelle computer probeert er 10 miljard per seconde.</p>
+        <div class="hl-grid">
+          <div class="hl-head hl-empty"></div>
+          <div class="hl-head"><span aria-hidden="true">✋</span> Met de hand</div>
+          <div class="hl-head"><span aria-hidden="true">🤖</span> Met een snelle computer</div>
+
+          <div class="hl-row-label"><strong>12 kleine letters</strong><code>zonnebloemen</code><span>95 biljard mogelijkheden</span></div>
+          <div class="hl-cell hand"><b>ruim 3 miljard jaar</b><span>Toen waren er nog niet eens dinosaurussen! 🦕</span></div>
+          <div class="hl-cell ok"><b>ongeveer 110 dagen</b><span>✅ Dat kan dus wél! Maar het duurt best lang.</span></div>
+
+          <div class="hl-row-label"><strong>12 tekens gemengd</strong><code>Zon!B1oem#7x</code><span>19 triljard mogelijkheden</span></div>
+          <div class="hl-cell hand"><b>615 biljoen jaar</b><span>Veel langer dan de aarde bestaat! 🌍</span></div>
+          <div class="hl-cell no"><b>ruim 61.000 jaar</b><span>❌ Zelfs de computer lukt het niet!</span></div>
         </div>
       </div>
 
       <div class="card sim">
-        <h3>Probeer het zelf: laat de computer alles proberen</h3>
-        <p class="sub">De computer begint bij <code>aaaaaaaaaaaa</code> en probeert 10 miljard wachtwoorden per seconde.</p>
+        <span class="demo-badge real">⚡ Echte snelheid</span>
+        <h3>Laat de computer alles proberen</h3>
+        <p class="sub">Dit is hoe snel een echte computer het doet: 10 miljard wachtwoorden per seconde! Hij begint bij <code>aaaaaaaaaaaa</code> en probeert hier alleen kleine letters.</p>
         <div class="sim-screen">
           <span class="sim-label">Geprobeerd</span>
           <span class="sim-count" id="sim-count">0</span>
@@ -145,7 +177,7 @@
         <h3>💡 Wat heb je geleerd?</h3>
         <ul class="tip-list">
           <li><span class="tip-icon" aria-hidden="true">🔨</span><span>Brute force is alles proberen. Een computer doet dat razendsnel.</span></li>
-          <li><span class="tip-icon" aria-hidden="true">📏</span><span>Elke letter extra maakt het aantal mogelijkheden <strong>26 keer</strong> zo groot.</span></li>
+          <li><span class="tip-icon" aria-hidden="true">📏</span><span>Elke letter extra maakt het aantal mogelijkheden <strong>26 keer</strong> zo groot. Met alle soorten tekens zelfs <strong>72 keer</strong>!</span></li>
           <li><span class="tip-icon" aria-hidden="true">🔠</span><span>Gebruik je ook hoofdletters, cijfers en tekens? Dan wordt het nog véél moeilijker!</span></li>
         </ul>
         <div class="final-actions">

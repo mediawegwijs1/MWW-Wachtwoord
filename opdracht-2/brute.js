@@ -380,6 +380,222 @@
     $("cpu-result").scrollIntoView({ block: "nearest", behavior: MWW.reduceMotion.matches ? "auto" : "smooth" });
   }
 
+  // ---------- Simulatie: zo werkt brute force ----------
+  const demo = (() => {
+    const CH = ALL; // a-z, A-Z, 0-9, leestekens: 72 tekens
+    const BASE = CH.length;
+    const LEN = 12;
+    const HUMAN_STEPS = 4;
+    const HUMAN_MS = 1300;
+    const MAX_RATE = 1e10;
+
+    const login = $("login");
+    const boxesEl = $("pw-boxes");
+    const btn = $("login-btn");
+    const msgEl = $("login-msg");
+    const cursor = $("cursor");
+    const robot = $("robot");
+    const countEl = $("demo-count");
+    const speedEl = $("demo-speed");
+    const captionEl = $("demo-caption");
+    const pauseBtn = $("demo-pause");
+
+    const boxes = [];
+    for (let i = 0; i < LEN; i++) {
+      const b = document.createElement("span");
+      b.className = "pw-box";
+      b.textContent = "a";
+      boxesEl.append(b);
+      boxes.push(b);
+    }
+
+    let d = null;
+    let raf = 0;
+    let started = false;
+
+    function fresh() {
+      return { running: false, last: 0, n: 0, acc: 0, phase: "human", ht: 0, mt: 0, step: -1, digits: Array(LEN).fill(0), rollUntil: Array(LEN).fill(0), flashUntil: 0, caption: "", lastN: -1 };
+    }
+
+    function rate() {
+      if (d.phase === "human") return 1000 / HUMAN_MS;
+      return Math.min(MAX_RATE, Math.pow(10, d.mt / 5));
+    }
+
+    function speedText(r) {
+      if (r < 1.5) return "1 per seconde";
+      if (r < 1000) return `${nl(r)} per seconde`;
+      const words = [[1e9, "miljard"], [1e6, "miljoen"], [1e3, "duizend"]];
+      const [v, w] = words.find(([v]) => r >= v);
+      const x = r / v;
+      return `${x < 10 ? x.toLocaleString("nl-NL", { maximumFractionDigits: 1 }) : nl(x)} ${w} per seconde`;
+    }
+
+    function caption(r) {
+      if (d.phase === "human") return "✋ Zo zou jij het doen: één voor één.";
+      if (r < 6) return "🖱️ Klik, fout. Klik, fout. Steeds sneller!";
+      if (r < 300) return "🤖 Nu neemt de computer het over!";
+      if (r < 1e5) return "⚡ Het laatste vakje gaat zo snel dat je het bijna niet meer kunt zien!";
+      if (r < MAX_RATE) return "🚀 Nog sneller! Kijk hoe de vakjes links ook gaan draaien.";
+      return "🐌 Volle snelheid: 10 miljard per seconde. En toch is hij nog lang niet klaar!";
+    }
+
+    function cursorTo(where) {
+      let x;
+      let y;
+      if (where === "btn") {
+        x = btn.offsetLeft + btn.offsetWidth * 0.55;
+        y = btn.offsetTop + btn.offsetHeight * 0.45;
+      } else {
+        x = boxesEl.offsetLeft + boxesEl.offsetWidth * 0.7;
+        y = boxesEl.offsetTop + boxesEl.offsetHeight * 0.6;
+      }
+      cursor.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function setFail(on, shake) {
+      login.classList.toggle("fail", on);
+      msgEl.textContent = on ? "❌ Fout wachtwoord" : "";
+      if (on && shake) {
+        login.classList.remove("fail-shake");
+        void login.offsetWidth;
+        login.classList.add("fail-shake");
+      }
+    }
+
+    function press(on) {
+      btn.classList.toggle("press", on);
+      cursor.classList.toggle("click", on);
+    }
+
+    function render(now, r) {
+      const n = Math.floor(d.n);
+      let x = n;
+      for (let k = LEN - 1; k >= 0; k--) {
+        const digit = x % BASE;
+        x = Math.floor(x / BASE);
+        const box = boxes[k];
+        const spinRate = r / Math.pow(BASE, LEN - 1 - k);
+        const fast = spinRate > 12;
+        if (digit !== d.digits[k]) {
+          d.digits[k] = digit;
+          box.textContent = CH[digit];
+          if (k < LEN - 1 && !fast) d.rollUntil[k] = now + 400;
+        }
+        box.classList.toggle("blur", fast);
+        box.classList.toggle("roll", !fast && now < d.rollUntil[k]);
+      }
+      countEl.textContent = nl(n);
+      speedEl.textContent = speedText(r);
+      const c = caption(r);
+      if (c !== d.caption) { d.caption = c; captionEl.textContent = c; }
+    }
+
+    function frame(now) {
+      if (!d.running) return;
+      const dt = Math.min(0.1, (now - d.last) / 1000);
+      d.last = now;
+
+      if (d.phase === "human") {
+        d.ht += dt * 1000;
+        const step = Math.floor(d.ht / HUMAN_MS);
+        const t = d.ht % HUMAN_MS;
+        if (step !== d.step) {
+          if (step > 0) d.n++;
+          d.step = step;
+          setFail(false);
+          press(false);
+          cursorTo("rest");
+          d.pressed = d.failed = d.moved = false;
+          if (step >= HUMAN_STEPS) {
+            d.phase = "machine";
+            d.mt = 0;
+          }
+        }
+        if (d.phase === "human") {
+          if (t > 150 && !d.moved) { d.moved = true; cursorTo("btn"); }
+          if (t > 700 && !d.pressed) { d.pressed = true; press(true); MWW.play("click"); }
+          if (t > 850 && !d.failed) { d.failed = true; press(false); setFail(true, true); }
+        }
+      } else {
+        d.mt += dt;
+        const r = rate();
+        d.acc += r * dt;
+        const before = Math.floor(d.n);
+        d.n += Math.floor(d.acc);
+        d.acc -= Math.floor(d.acc);
+        const changed = Math.floor(d.n) !== before;
+
+        if (r < 6) {
+          cursorTo("btn");
+          if (changed) { press(true); setFail(true, true); d.flashUntil = now + 140; MWW.play("click"); }
+          else if (now > d.flashUntil) { press(false); setFail(false); }
+        } else {
+          press(false);
+          cursor.classList.add("gone");
+          robot.classList.add("on");
+          if (r < 40) {
+            if (changed) { setFail(true, false); d.flashUntil = now + 60; }
+            else if (now > d.flashUntil) setFail(false);
+          } else {
+            setFail(true, false);
+          }
+        }
+      }
+
+      render(now, rate());
+      raf = requestAnimationFrame(frame);
+    }
+
+    function reset() {
+      cancelAnimationFrame(raf);
+      d = fresh();
+      cursor.classList.remove("gone", "click");
+      robot.classList.remove("on");
+      press(false);
+      setFail(false);
+      boxes.forEach((b) => { b.className = "pw-box"; b.textContent = CH[0]; });
+      requestAnimationFrame(() => cursorTo("rest"));
+      render(performance.now(), rate());
+      pauseBtn.textContent = "⏸️ Pauze";
+    }
+
+    function play() {
+      if (d.running) return;
+      d.running = true;
+      d.last = performance.now();
+      pauseBtn.textContent = "⏸️ Pauze";
+      raf = requestAnimationFrame(frame);
+    }
+
+    function pause() {
+      d.running = false;
+      cancelAnimationFrame(raf);
+      pauseBtn.textContent = "▶️ Verder";
+    }
+
+    pauseBtn.addEventListener("click", () => (d.running ? pause() : play()));
+    $("demo-restart").addEventListener("click", () => { reset(); play(); });
+
+    // Vanzelf starten zodra de simulatie in beeld komt
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting) && !started && !stages.truth.hidden) {
+        started = true;
+        play();
+      }
+    }, { threshold: 0.4 });
+    io.observe($("demo"));
+
+    reset();
+    return {
+      stop() { pause(); reset(); started = false; },
+      arm() {
+        const r = $("demo").getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) { started = true; play(); }
+      },
+    };
+  })();
+
   // ---------- Zo zit het echt ----------
   let sim = { running: false, t0: 0, done: 0, raf: 0 };
 
@@ -388,7 +604,9 @@
     setStep(4);
     show("truth");
     resetSim();
+    demo.stop();
     scrollToStage(stages.truth);
+    setTimeout(() => demo.arm(), 900);
     MWW.play("click");
   });
 
@@ -445,6 +663,7 @@
 
   $("restart").addEventListener("click", () => {
     resetSim();
+    demo.stop();
     state.results = [];
     startRound(0);
     window.scrollTo({ top: 0, behavior: MWW.reduceMotion.matches ? "auto" : "smooth" });
@@ -454,6 +673,7 @@
     if (e.persisted) {
       cpuRun++;
       resetSim();
+      demo.stop();
       state.results = [];
       startRound(0);
     }
