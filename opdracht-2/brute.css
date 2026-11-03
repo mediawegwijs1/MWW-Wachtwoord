@@ -120,7 +120,17 @@ main.brute { max-width: 980px; }
   text-shadow: 0 0 8px rgba(77, 255, 154, .7);
   transition: background .2s;
 }
-.reel.spin { color: #b9ffd7; }
+.reel.spin { color: #b9ffd7; opacity: .45; }
+.reel.trying { background: rgba(255, 210, 63, .18); border-color: #ffd23f; color: #ffd23f; text-shadow: 0 0 10px rgba(255, 210, 63, .8); box-shadow: 0 0 14px rgba(255, 210, 63, .5); }
+
+.groups { display: flex; justify-content: center; gap: 8px; margin: 0 0 12px; flex-wrap: wrap; }
+.groups span {
+  padding: 3px 12px; border-radius: 999px;
+  border: 2px solid rgba(77, 255, 154, .3); color: rgba(77, 255, 154, .55);
+  font-weight: 900; font-size: 16px;
+  transition: background .15s, color .15s;
+}
+.groups span.on { background: #ffd23f; border-color: #ffd23f; color: #071a10; }
 .reel.locked { background: #4dff9a; color: #071a10; text-shadow: none; animation: pop .3s; }
 
 .screen-info {
@@ -224,6 +234,7 @@ footer { padding-top: 0; }
   .screen { border-width: 8px; padding: 12px 8px 8px; }
   .reels { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .reel { height: 48px; font-size: 28px; }
+  .groups span { font-size: 14px; padding: 2px 9px; }
   .cpu-log { font-size: 13px; }
   .compare { grid-template-columns: 1fr; }
   .grow li { grid-template-columns: 74px minmax(0, 1fr) auto; gap: 8px; font-size: 15px; }

@@ -175,7 +175,7 @@
     const lessons = [
       "💡 Een wachtwoord van 1 letter heeft maar 26 mogelijkheden. Dat is zo geraden!",
       "💡 Met 2 letters zijn er al 26 × 26 = 676 mogelijke wachtwoorden. Maar omdat je bij elke letter hoorde of hij goed was, hoefde je er maar een paar te proberen.",
-      "💡 Met 3 letters zijn er al 17.576 mogelijke wachtwoorden! Wat denk je: hoe lang duurt een wachtwoord van 12 letters?",
+      "💡 Met 3 letters zijn er al 17.576 mogelijke wachtwoorden! Wat denk je: hoe lang duurt een wachtwoord van 12 tekens met hoofdletters, cijfers en leestekens?",
     ];
 
     setTimeout(() => {
@@ -193,7 +193,7 @@
       $("done-lesson").textContent = lessons[state.round];
       $("next-round").textContent = state.round < ROUNDS.length - 1
         ? `Volgende: ${ROUNDS[state.round + 1]} letters 👉`
-        : "Volgende: 12 letters 😱";
+        : "Volgende: 12 tekens 😱";
       show("done");
       scrollToStage(stages.done);
       $("next-round").focus({ preventScroll: true });
@@ -249,6 +249,7 @@
     setStep(3);
     show("computer");
     reels.forEach((r) => { r.className = "reel"; r.textContent = "?"; });
+    showGroup(-1);
     cpuLog.textContent = "";
     $("cpu-count").textContent = "0";
     $("cpu-status").textContent = "Klaar om te starten";
@@ -266,59 +267,96 @@
     while (cpuLog.children.length > 5) cpuLog.firstChild.remove();
   }
 
+  // Alle tekens die de computer probeert, in deze volgorde
+  const GROUPS = [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "0123456789",
+    "!?@#$%&*+=",
+  ];
+  const ALL = GROUPS.join("");
+  const groupOf = (ch) => GROUPS.findIndex((g) => g.includes(ch));
+  const groupPills = [...document.querySelectorAll("#cpu-groups span")];
+
+  function makeSecret() {
+    // Minstens 1 teken uit elke groep, de rest vooral letters
+    const pick = (g) => g[Math.floor(Math.random() * g.length)];
+    const chars = [pick(GROUPS[0]), pick(GROUPS[1]), pick(GROUPS[2]), pick(GROUPS[3])];
+    while (chars.length < 12) {
+      const r = Math.random();
+      chars.push(pick(r < 0.45 ? GROUPS[0] : r < 0.7 ? GROUPS[1] : r < 0.88 ? GROUPS[2] : GROUPS[3]));
+    }
+    for (let i = chars.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [chars[i], chars[j]] = [chars[j], chars[i]];
+    }
+    return chars.join("");
+  }
+
+  function showGroup(g) {
+    groupPills.forEach((p, i) => p.classList.toggle("on", i === g));
+  }
+
   $("cpu-start").addEventListener("click", () => {
-    const btn = $("cpu-start");
-    btn.disabled = true;
+    $("cpu-start").disabled = true;
     const run = ++cpuRun;
-    const secret = randomLetters(12);
-    const perReel = MWW.reduceMotion.matches ? 60 : 560;
-    const t0 = performance.now();
-    let lastLog = 0;
-    let lastLine = "";
+    const secret = makeSecret();
+    let pos = 0;
+    let idx = -1;
     let total = 0;
-    let lockedCount = 0;
+    let next = performance.now() + 300;
+    let lastLog = 0;
+    // Eerst rustig zodat je het ziet, daarna steeds sneller
+    const stepMs = (p) => Math.max(5, 55 * Math.pow(0.78, p));
+
     $("cpu-status").textContent = "Bezig met kraken... ⚡";
     MWW.play("click");
 
     function frame(now) {
       if (run !== cpuRun) return;
-      const elapsed = now - t0;
-      const current = Math.min(12, Math.floor(elapsed / perReel));
 
-      while (lockedCount < current) {
-        const i = lockedCount;
-        const ch = secret[i];
-        reels[i].className = "reel locked";
-        reels[i].textContent = ch;
-        total += ABC.indexOf(ch) + 1;
-        log(`${secret.slice(0, i + 1)}  ✔ letter ${i + 1} gevonden!`, true);
-        MWW.play("tick");
-        lockedCount++;
+      while (pos < 12 && now >= next) {
+        idx++;
+        total++;
+        const ch = ALL[idx];
+        if (ch === secret[pos]) {
+          reels[pos].className = "reel locked";
+          reels[pos].textContent = ch;
+          log(`${secret.slice(0, pos + 1)}  ✔ plek ${pos + 1} gevonden!`, true);
+          MWW.play("good");
+          pos++;
+          idx = -1;
+          next += 350;
+        } else {
+          next += stepMs(pos);
+        }
       }
 
-      if (current >= 12) {
+      if (pos >= 12) {
+        showGroup(-1);
         $("cpu-count").textContent = nl(total);
         $("cpu-status").textContent = "Gekraakt! ✔";
         cpuDone(secret, total);
         return;
       }
 
-      const p = (elapsed % perReel) / perReel;
-      const target = ABC.indexOf(secret[current]);
-      const k = Math.min(target, Math.floor(p * (target + 1.5)));
-      const ch = ABC[k];
-      reels[current].className = "reel spin";
-      reels[current].textContent = ch;
-      for (let j = current + 1; j < 12; j++) {
+      if (idx >= 0) {
+        const ch = ALL[idx];
+        reels[pos].className = "reel trying";
+        reels[pos].textContent = ch;
+        showGroup(groupOf(ch));
+        $("cpu-status").textContent = `Plek ${pos + 1} van 12 ⚡`;
+        if (now - lastLog > 60) {
+          lastLog = now;
+          log(`${secret.slice(0, pos)}${ch}  ✘ fout`);
+          MWW.play("click");
+        }
+      }
+      for (let j = pos + 1; j < 12; j++) {
         reels[j].className = "reel spin";
-        reels[j].textContent = ABC[Math.floor(Math.random() * 26)];
+        reels[j].textContent = "?";
       }
-      $("cpu-count").textContent = nl(total + k + 1);
-      if (now - lastLog > 70) {
-        lastLog = now;
-        const line = `${secret.slice(0, current)}${ch}  ✘ fout`;
-        if (ch !== secret[current] && line !== lastLine) { log(line); lastLine = line; }
-      }
+      $("cpu-count").textContent = nl(total);
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
